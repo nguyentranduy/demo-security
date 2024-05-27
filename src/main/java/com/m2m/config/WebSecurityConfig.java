@@ -62,7 +62,7 @@ public class WebSecurityConfig {
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http.authorizeRequests(requests -> requests.requestMatchers("/auth/login", "/docs/**", "/users").permitAll()
+		http.authorizeRequests(requests -> requests.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/users").permitAll()
 				.anyRequest().authenticated());
 
 		http.exceptionHandling().authenticationEntryPoint((request, response, ex) -> {

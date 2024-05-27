@@ -24,7 +24,7 @@ public class ProductApi {
 	ProductService productService;
 
 	@GetMapping
-	@RolesAllowed({"user, admin"})
+	@RolesAllowed({"user", "admin"})
 	public List<Product> doGetAll() {
 		return productService.findAll();
 	}

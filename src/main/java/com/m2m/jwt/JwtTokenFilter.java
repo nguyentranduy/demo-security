@@ -79,8 +79,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		String subject = (String) claims.get(Claims.SUBJECT);
 		String roles = (String) claims.get("roles");
 
-		System.out.println("SUBJECT: " + subject);
-		System.out.println("roles: " + roles);
+		System.out.println("Copyright by NguyenTranDuy");
 		roles = roles.replace("[", "").replace("]", "");
 		String[] roleNames = roles.split(",");
 
