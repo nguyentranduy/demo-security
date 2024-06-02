@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,9 +36,8 @@ public class WebSecurityConfig {
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-		
-		return new UserDetailsService() {
 
+		return new UserDetailsService() {
 			@Override
 			public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 				return userRepo.findByUsername(username)
@@ -56,21 +56,21 @@ public class WebSecurityConfig {
 		return authConfig.getAuthenticationManager();
 	}
 
-	@SuppressWarnings({ "deprecation", "removal" })
 	@Bean
 	public SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http.csrf().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.csrf(AbstractHttpConfigurer::disable);
+		http.sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		http.authorizeRequests(requests -> requests.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/users").permitAll()
+		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+				.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/users").permitAll()
 				.anyRequest().authenticated());
 
-		http.exceptionHandling().authenticationEntryPoint((request, response, ex) -> {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-		});
+		http.exceptionHandling(
+				(exceptionHandling) -> exceptionHandling.authenticationEntryPoint((request, response, ex) -> {
+					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+				}));
 
 		http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
 		return http.build();
 	}
 }
