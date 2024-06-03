@@ -62,7 +62,7 @@ public class WebSecurityConfig {
 		http.sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-				.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/users").permitAll()
+				.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/index", "/login").permitAll()
 				.anyRequest().authenticated());
 
 		http.exceptionHandling(

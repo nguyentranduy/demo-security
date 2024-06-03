@@ -17,6 +17,7 @@ import com.m2m.entity.User;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,13 +30,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-
-		if (!hasAuthorizationBearer(request)) {
-			filterChain.doFilter(request, response);
-			return;
+		String token = null;
+		
+		if (hasAuthorizationBearer(request)) {
+			token = getAccessTokenFromHeader(request); 
+		} else {
+			token = getAccessTokenFromCookie(request, response, filterChain);
 		}
-
-		String token = getAccessToken(request);
 
 		if (!jwtUtil.validateAccessToken(token)) {
 			filterChain.doFilter(request, response);
@@ -44,7 +45,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		setAuthenticationContext(token, request);
 		filterChain.doFilter(request, response);
-
 	}
 
 	private boolean hasAuthorizationBearer(HttpServletRequest request) {
@@ -55,8 +55,26 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		return true;
 	}
+	
+	private String getAccessTokenFromCookie(HttpServletRequest request, HttpServletResponse response,
+			FilterChain filterChain) throws ServletException, IOException {
 
-	private String getAccessToken(HttpServletRequest request) {
+		if (request.getCookies() == null) {
+			return null;
+		}
+
+		Cookie[] rc = request.getCookies();
+
+		StringBuilder token = new StringBuilder();
+		for (int i = 0; i < rc.length; i++) {
+			if (rc[i].getName().equals("token") == true) {
+				token.append(rc[i].getValue().toString());
+			}
+		}
+		return token.toString();
+	}
+
+	private String getAccessTokenFromHeader(HttpServletRequest request) {
 		String header = request.getHeader("Authorization");
 		String token = header.split(" ")[1].trim();
 		return token;
