@@ -33,6 +33,9 @@ public class WebSecurityConfig {
 
 	@Autowired
 	private JwtTokenFilter jwtTokenFilter;
+	
+	private static final String[] BY_PASS_JWT = {"/auth/login", "/api/v1/vnpay/vnpay-payment",
+			"/docs/**", "/index", "/login"};
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -62,7 +65,7 @@ public class WebSecurityConfig {
 		http.sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-				.requestMatchers("/auth/login", "/api/v1/vnpay/vnpay-payment", "/docs/**", "/index", "/login").permitAll()
+				.requestMatchers(BY_PASS_JWT).permitAll()
 				.anyRequest().authenticated());
 
 		http.exceptionHandling(

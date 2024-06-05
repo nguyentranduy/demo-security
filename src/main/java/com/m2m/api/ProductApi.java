@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.m2m.entity.Product;
@@ -27,6 +28,12 @@ public class ProductApi {
 	@RolesAllowed({"user", "admin"})
 	public List<Product> doGetAll() {
 		return productService.findAll();
+	}
+
+	@GetMapping("/find")
+	@RolesAllowed({"user", "admin"})
+	public List<Product> doGetByQuantity(@RequestParam("min-quantity") int minQuantity) {
+		return productService.findByQuantityGreaterThan(minQuantity);
 	}
 	
 	@PostMapping

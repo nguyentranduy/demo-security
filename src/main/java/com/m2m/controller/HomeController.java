@@ -42,7 +42,7 @@ public class HomeController {
 			User user = (User) authentication.getPrincipal();
 			String accessToken = jwtUtil.generateAccessToken(user);
 			Cookie cookie = new Cookie("token", accessToken);
-			cookie.setMaxAge(Integer.MAX_VALUE);
+			cookie.setMaxAge(60*60); // 3600s ~ 1h
 			servletResponse.addCookie(cookie);
 
 			return "succeed";

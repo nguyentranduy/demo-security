@@ -33,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		String token = null;
 		
 		if (hasAuthorizationBearer(request)) {
-			token = getAccessTokenFromHeader(request); 
+			token = getAccessTokenFromHeader(request);
 		} else {
 			token = getAccessTokenFromCookie(request, response, filterChain);
 		}
